@@ -10,7 +10,7 @@ export class HomeController {
     getHome(@Request() req: any) {
         return {
             message: 'Welcome to the home page',
-            user: req.user || 'No user found',
+            user: req.user,
         }
     }
 }
