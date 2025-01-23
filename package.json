@@ -9,6 +9,7 @@
     "build": "nest build",
     "mergeSchema":"node scripts/mergeSchemas.js",
     "createModel":"node scripts/createModel.js",
+    "seeder":"ts-node prisma/seeders/seederMain.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
