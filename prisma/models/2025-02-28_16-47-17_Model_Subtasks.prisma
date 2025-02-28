@@ -1,0 +1,17 @@
+
+model Subtasks {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  subtaskName String
+  isCompleted Boolean @default(false)
+  assignedTo Int
+  description String
+  priorityId Int
+  TaskStatusId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks @relation(fields: [taskId], references: [id])
+  Priorities Priorities @relation(fields: [priorityId], references: [id])
+  TaskStatus Task_estatuses @relation(fields: [TaskStatusId], references: [id])
+  User User @relation(fields: [assignedTo], references: [id])
+}

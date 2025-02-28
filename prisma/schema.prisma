@@ -11,16 +11,18 @@ datasource db {
 
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
-  password String
-  roleId Int
-  isActive Boolean @default(true)
-  lastLogin DateTime? @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role Role @relation(fields: [roleId], references: [id])
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  userName     String
+  passwordHash String
+  roleId       Int
+  isActive     Boolean   @default(true)
+  lastLogin    DateTime? @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  role         Role      @relation(fields: [roleId], references: [id])
+  Tasks        Tasks[]
+  Subtasks     Subtasks[]
 }
 
 
@@ -30,4 +32,78 @@ model Role {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User User[]
+}
+
+
+
+model Task_estatuses {
+  id        Int      @id @default(autoincrement())
+  statusName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks[]
+  Subtasks Subtasks[]
+}
+
+
+
+model Projects {
+  id        Int      @id @default(autoincrement())
+  name     String
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks[]
+}
+
+
+
+model Priorities {
+  id        Int      @id @default(autoincrement())
+  priorityName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks[]
+  Subtasks Subtasks[]
+}
+
+
+
+model Tasks {
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  projectId      Int
+  taskStatusId   Int
+  priorityId     Int
+  taskName       String
+  taskDescription String
+  taskStartDate  DateTime 
+  taskEndDate    DateTime
+  taskComments   String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  User           User      @relation(fields: [userId], references: [id])
+  Projects       Projects  @relation(fields: [projectId], references: [id])
+  TaskStatus     Task_estatuses @relation(fields: [taskStatusId], references: [id])
+  Priorities     Priorities @relation(fields: [priorityId], references: [id])
+  subtasks       Subtasks[]
+}
+
+
+
+model Subtasks {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  subtaskName String
+  isCompleted Boolean @default(false)
+  assignedTo Int
+  description String
+  priorityId Int
+  TaskStatusId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks @relation(fields: [taskId], references: [id])
+  Priorities Priorities @relation(fields: [priorityId], references: [id])
+  TaskStatus Task_estatuses @relation(fields: [TaskStatusId], references: [id])
+  User User @relation(fields: [assignedTo], references: [id])
 }

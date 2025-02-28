@@ -1,0 +1,9 @@
+
+model Priorities {
+  id        Int      @id @default(autoincrement())
+  priorityName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tasks Tasks[]
+  Subtasks Subtasks[]
+}

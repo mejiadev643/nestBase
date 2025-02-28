@@ -7,37 +7,37 @@ export const userSeeder = async (prisma: PrismaService) => {
     const users = [
         {
             email: "admin@admin.com",
-            name: "Admin",
-            password: hashedPassword,
+            userName: "Admin",
+            passwordHash: hashedPassword,
             roleId: 1,
             createdAt: new Date().toISOString(),
         },
         {
             email: "user1@test.com",
-            name: "User 1",
+            userName: "User 1",
+            passwordHash: hashedPassword,
             roleId: 3,
-            password: hashedPassword,
             createdAt: new Date().toISOString(),
         },
         {
             email: "user2@test.com",
-            name: "User 2",
+            userName: "User 2",
+            passwordHash: hashedPassword,
             roleId: 3,
-            password: hashedPassword,
             createdAt: new Date().toISOString(),
         },
         {
             email: "user3@test.com",
-            name: "User 3",
+            userName: "User 3",
+            passwordHash: hashedPassword,
             roleId: 3,
-            password: hashedPassword,
             createdAt: new Date().toISOString(),
         },
         {
             email: "user4@test.com",
-            name: "User 4",
+            userName: "User 4",
+            passwordHash: hashedPassword,
             roleId: 3,
-            password: hashedPassword,
             createdAt: new Date().toISOString(),
         },
     ];
@@ -47,5 +47,5 @@ export const userSeeder = async (prisma: PrismaService) => {
         skipDuplicates: true,
     });
 
-    console.log("User seeding completed.");
-};
+    console.log("Users seeding completed.");
+}

@@ -1,0 +1,20 @@
+
+model Tasks {
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  projectId      Int
+  taskStatusId   Int
+  priorityId     Int
+  taskName       String
+  taskDescription String
+  taskStartDate  DateTime 
+  taskEndDate    DateTime
+  taskComments   String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  User           User      @relation(fields: [userId], references: [id])
+  Projects       Projects  @relation(fields: [projectId], references: [id])
+  TaskStatus     Task_estatuses @relation(fields: [taskStatusId], references: [id])
+  Priorities     Priorities @relation(fields: [priorityId], references: [id])
+  subtasks       Subtasks[]
+}
