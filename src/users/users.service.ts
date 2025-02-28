@@ -20,7 +20,7 @@ export class UsersService {
             select: {
                 id: true,
                 email: true,
-                name: true,
+                userName: true,
                 role: {
                     select: {
                         id: true,
@@ -47,8 +47,8 @@ export class UsersService {
             return await this.prisma.user.create({
                 data: {
                     email,
-                    name,
-                    password: hashedPassword,
+                    userName: name,
+                    passwordHash: hashedPassword,
                     roleId: roleId ? roleId : 3,
                     createdAt: new Date(),
                 },
@@ -71,7 +71,7 @@ export class UsersService {
                     id,
                 },
                 data: {
-                    name,
+                    userName: name,
                     roleId,
                     updatedAt: new Date().toISOString(),
                 }
