@@ -17,7 +17,6 @@ export class AuthService {
             // Elimina la propiedad 'password' del objeto 'user'
             const { passwordHash, ...result } = user;
             // Devuelve el objeto 'user' sin la propiedad 'password'
-            console.log(result);
             return result;
         }
         throw new UnauthorizedException('Credenciales inválidas.');
