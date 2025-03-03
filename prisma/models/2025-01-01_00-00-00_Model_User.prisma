@@ -11,4 +11,5 @@ model User {
   role Role @relation(fields: [roleId], references: [id])
   Tasks Tasks[]
   Subtasks Subtasks[]
+  Projects Projects[]
 }

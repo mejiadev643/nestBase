@@ -5,9 +5,11 @@ import { AuthModule } from './auth/auth.module';
 import { HomeController } from './home/home.controller';
 import { HomeModule } from './home/home.module';
 import { WebModule } from './web/web.module';
+import { TasksModule } from './task/task.module';
+import { ProjecModule } from './project/project.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, HomeModule, WebModule],
+  imports: [UsersModule, AuthModule, HomeModule, WebModule, TasksModule,ProjecModule],
   controllers: [HomeController],
   providers: [PrismaService],
   exports: [PrismaService],
