@@ -17,4 +17,12 @@ export class PaginationDto {
   @IsOptional()
   @IsString()
   search?: string = '';
+
+  @IsOptional()
+  @IsString()
+  orderBy?: string = 'id';
+
+  @IsOptional()
+  @IsString()
+  order?: 'asc' | 'desc' = 'desc';
 }
