@@ -4,15 +4,19 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TaskDto } from './dto/task.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
-import { findId } from 'src/common/services/Common.service';
+import { CommonService } from '../common/services/Common.service';
+
 
 @Injectable()
 export class TaskService {
 
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService,
+        private commonService: CommonService
+    ) { }
 
     async findTasks(req: any, pagination: PaginationDto) {
-        const { skip, take, search, order,orderBy } = pagination;
+        const { skip, take, search, order, orderBy } = pagination;
+        const adjustedSkip = skip * take;
         let searchQuery = search ? {
             //buscar por and
             AND: [
@@ -25,13 +29,9 @@ export class TaskService {
             ],
         } : {};
 
-        // Obtener el número total de registros sin paginación
-        const totalItems = await this.prisma.tasks.count({
-            where: {
-                deletedAt: null,
-                userId: req.userId,
-                ...searchQuery,
-            },
+        const totalItems = await this.commonService.countRecords('tasks', {
+            deletedAt: null,
+            userId: req.userId,
         });
 
         // Obtener los registros paginados
@@ -42,10 +42,10 @@ export class TaskService {
                 ...searchQuery,
             },
             ...TaskRelations,
-            skip,
+            skip: adjustedSkip,
             take,
             orderBy: {
-                 [orderBy]: order,
+                [orderBy]: order,
             },
         });
 
@@ -57,7 +57,7 @@ export class TaskService {
             meta: {
                 totalItems,
                 totalPages,
-                currentPage: Math.floor(skip / take) + 1,
+                currentPage: Math.floor(adjustedSkip / take) + 1,
                 perPage: take,
                 search,
             },
@@ -65,7 +65,7 @@ export class TaskService {
     }
     async findTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await findId(this.prisma, id, 'tasks');
+        await this.commonService.findId(id, 'tasks');
         const task = await this.prisma.tasks.findUnique({
             where: {
                 deletedAt: null,
@@ -106,7 +106,7 @@ export class TaskService {
     }
     async updateTask(req: any, objId: ParseIdDto, taskData: TaskDto) {
         const id = objId.id;
-        await findId(this.prisma, id, 'tasks');
+        await this.commonService.findId(id, 'tasks');
         const { projectId, priorityId, taskStatusId, ...editTask } = taskData;
         try {
             const task = await this.prisma.tasks.update({
@@ -130,7 +130,7 @@ export class TaskService {
     }
     async deleteTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await findId(this.prisma, id, 'tasks');
+        await this.commonService.findId(id, 'tasks');
         try {
             return await this.prisma.tasks.update({
                 where: {

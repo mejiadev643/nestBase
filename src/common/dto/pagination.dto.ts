@@ -3,7 +3,10 @@ import { Transform } from 'class-transformer';
 
 export class PaginationDto {
   @IsOptional()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => {
+    const parsedValue = parseInt(value, 10);
+    return parsedValue === 0 ? 0 : parsedValue - 1;
+  })
   @IsInt()
   @Min(0)
   skip?: number = 0;

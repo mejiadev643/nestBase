@@ -4,15 +4,17 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ProjectDto } from './dto/project.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
-import { findId } from 'src/common/services/Common.service';
+import { CommonService } from '../common/services/Common.service';
 
 @Injectable()
 export class ProjectService {
 
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService,
+        private commonService: CommonService
+    ) { }
 
-    async findProjects(req: any, pagination : PaginationDto) {
-        const { skip, take, search,order,orderBy } = pagination;
+    async findProjects(req: any, pagination: PaginationDto) {
+        const { skip, take, search, order, orderBy } = pagination;
         let searchQuery = search ? {
             //buscar por and
             AND: [
@@ -26,12 +28,9 @@ export class ProjectService {
         } : {};
 
         // Obtener el número total de registros sin paginación
-        const totalItems = await this.prisma.projects.count({
-            where: {
-                userId: req.userId,
-                deletedAt: null,
-                ...searchQuery,
-            },
+        const totalItems = await this.commonService.countRecords('projects', {
+            deletedAt: null,
+            userId: req.userId,
         });
 
         // Obtener los registros paginados
@@ -61,7 +60,7 @@ export class ProjectService {
             take,
             orderBy: {
                 [orderBy]: order,
-           },
+            },
         });
 
         // Calcular la cantidad total de páginas
@@ -71,7 +70,7 @@ export class ProjectService {
             data: projects,
             meta: {
                 totalItems,
-                totalPages ,
+                totalPages,
                 currentPage: Math.floor(skip / take) + 1,
                 perPage: take,
                 search,
@@ -79,10 +78,10 @@ export class ProjectService {
         };
     }
 
-    async findProject(req: any, objId :ParseIdDto ) {
+    async findProject(req: any, objId: ParseIdDto) {
         const id = objId.id;
 
-        await findId(this.prisma, objId.id, 'projects');
+        await this.commonService.findId(id, 'projects');
 
         // Obtener los registros paginados
         const projects = await this.prisma.projects.findFirst({
@@ -103,7 +102,7 @@ export class ProjectService {
                         userName: true,
                     },
                 },
-                Tasks:{
+                Tasks: {
                     ...TaskRelations,
                 },
             },
@@ -135,10 +134,10 @@ export class ProjectService {
     }
 
     async updateProject(req: any, objId: ParseIdDto, projectData: ProjectDto) {
-        await findId(this.prisma, objId.id, 'projects');
         const id = objId.id;
+        await this.commonService.findId(id, 'projects');
         try {
-            
+
             return await this.prisma.projects.update({
                 where: {
                     id,
@@ -155,8 +154,8 @@ export class ProjectService {
         }
     }
     async deleteProject(req: any, objId: ParseIdDto) {
-        await findId(this.prisma, objId.id, 'projects');
         const id = objId.id;
+        await this.commonService.findId(id, 'projects');
         try {
             return await this.prisma.projects.update({
                 where: {
