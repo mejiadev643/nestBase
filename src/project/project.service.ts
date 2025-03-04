@@ -158,6 +158,7 @@ export class ProjectService {
             return await this.prisma.projects.update({
                 where: {
                     id,
+                    userId: req.userId,
                 },
                 data: {
                     deletedAt: new Date(),

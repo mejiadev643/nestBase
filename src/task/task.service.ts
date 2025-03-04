@@ -136,6 +136,7 @@ export class TaskService {
             return await this.prisma.tasks.update({
                 where: {
                     id,
+                    userId: req.userId,
                 },
                 data: {
                     deletedAt: new Date(),
