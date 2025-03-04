@@ -6,10 +6,11 @@ model Tasks {
   taskStatusId   Int
   priorityId     Int
   taskName       String
-  taskDescription String
-  taskStartDate  DateTime 
-  taskEndDate    DateTime
-  taskComments   String
+  taskDescription String?
+  taskStartDate  DateTime? 
+  taskEndDate    DateTime?
+  taskComments   String?
+  deletedAt      DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   User           User      @relation(fields: [userId], references: [id])

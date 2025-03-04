@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Tasks" ALTER COLUMN "taskDescription" DROP NOT NULL,
+ALTER COLUMN "taskStartDate" DROP NOT NULL,
+ALTER COLUMN "taskEndDate" DROP NOT NULL,
+ALTER COLUMN "taskComments" DROP NOT NULL;

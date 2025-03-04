@@ -10,6 +10,7 @@ model Subtasks {
   TaskStatusId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
   Tasks Tasks @relation(fields: [taskId], references: [id])
   Priorities Priorities @relation(fields: [priorityId], references: [id])
   TaskStatus Task_estatuses @relation(fields: [TaskStatusId], references: [id])

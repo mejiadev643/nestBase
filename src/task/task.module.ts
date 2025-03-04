@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import {TaskService} from './task.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { PrismaService } from 'prisma/prisma.service';
-import { TaskController } from './task.contoller';
+import { TaskController } from './task.controller';
 
 
 @Module({
