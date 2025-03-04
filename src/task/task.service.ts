@@ -4,6 +4,8 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TaskDto } from './dto/task.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
+import { find } from 'rxjs';
+import { findId } from 'src/common/services/Common.service';
 
 @Injectable()
 export class TaskService {
@@ -64,7 +66,7 @@ export class TaskService {
     }
     async findTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await this.findTaskId(id);
+        await findId(this.prisma, id, 'tasks');
         const task = await this.prisma.tasks.findUnique({
             where: {
                 deletedAt: null,
@@ -105,7 +107,7 @@ export class TaskService {
     }
     async updateTask(req: any, objId: ParseIdDto, taskData: TaskDto) {
         const id = objId.id;
-        await this.findTaskId(id);
+        await findId(this.prisma, id, 'tasks');
         const { projectId, priorityId, taskStatusId, ...editTask } = taskData;
         try {
             const task = await this.prisma.tasks.update({
@@ -129,7 +131,7 @@ export class TaskService {
     }
     async deleteTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await this.findTaskId(id);
+        await findId(this.prisma, id, 'tasks');
         try {
             return await this.prisma.tasks.update({
                 where: {
@@ -143,17 +145,4 @@ export class TaskService {
             throw new InternalServerErrorException(error.message);
         }
     }
-    async findTaskId(id: number) {
-        const task = await this.prisma.tasks.findUnique({
-            where: {
-                id,
-                deletedAt: null,
-            },
-        });
-        if (!task) {
-            throw new ConflictException('Task not found');
-        }
-        return task;
-    }
-
 }

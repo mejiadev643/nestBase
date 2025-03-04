@@ -4,6 +4,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ProjectDto } from './dto/project.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
+import { findId } from 'src/common/services/Common.service';
 
 @Injectable()
 export class ProjectService {
@@ -78,7 +79,7 @@ export class ProjectService {
     async findProject(req: any, objId :ParseIdDto ) {
         const id = objId.id;
 
-        await this.findProjectId(id);//unicamente para verificar que exista el proyecto
+        await findId(this.prisma, objId.id, 'projects');
 
         // Obtener los registros paginados
         const projects = await this.prisma.projects.findFirst({
@@ -131,7 +132,7 @@ export class ProjectService {
     }
 
     async updateProject(req: any, objId: ParseIdDto, projectData: ProjectDto) {
-        await this.findProjectId(objId.id);//unicamente para verificar que exista el proyecto
+        await findId(this.prisma, objId.id, 'projects');
         const id = objId.id;
         try {
             
@@ -151,7 +152,7 @@ export class ProjectService {
         }
     }
     async deleteProject(req: any, objId: ParseIdDto) {
-        await this.findProjectId(objId.id);//unicamente para verificar que exista el proyecto
+        await findId(this.prisma, objId.id, 'projects');
         const id = objId.id;
         try {
             return await this.prisma.projects.update({
@@ -165,18 +166,5 @@ export class ProjectService {
         } catch (error) {
             throw new InternalServerErrorException('An error occurred while deleting the project', error);
         }
-    }
-
-    private async findProjectId(id: number) {
-        const project = await this.prisma.projects.findUnique({
-            where: {
-                id,
-                deletedAt: null,
-            },
-        });
-        if (!project) {
-            throw new ConflictException('Project not found');
-        }
-        return project;
     }
 }
