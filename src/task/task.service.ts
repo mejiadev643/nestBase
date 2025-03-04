@@ -147,6 +147,7 @@ export class TaskService {
         const task = await this.prisma.tasks.findUnique({
             where: {
                 id,
+                deletedAt: null,
             },
         });
         if (!task) {
