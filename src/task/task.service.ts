@@ -4,7 +4,6 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TaskDto } from './dto/task.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
-import { find } from 'rxjs';
 import { findId } from 'src/common/services/Common.service';
 
 @Injectable()
