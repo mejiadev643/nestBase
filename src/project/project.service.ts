@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ProjectDto } from './dto/project.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
+import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
 
 @Injectable()
 export class ProjectService {
@@ -51,7 +52,9 @@ export class ProjectService {
                         userName: true,
                     },
                 },
-                Tasks: true,
+                Tasks: {
+                    ...TaskRelations,
+                }
             },
             skip,
             take,
@@ -96,52 +99,8 @@ export class ProjectService {
                         userName: true,
                     },
                 },
-                Tasks: {
-                    select: {
-                        id: true,
-                        taskName: true,
-                        taskDescription: true,
-                        taskStartDate: true,
-                        taskEndDate: true,
-                        TaskStatus: {
-                            select: {
-                                id: true,
-                                statusName: true,
-                            },
-                        },
-                        Priorities: {
-                            select: {
-                                id: true,
-                                priorityName: true,
-                            },
-                        },
-                        subtasks: {
-                            select: {
-                                id: true,
-                                subtaskName: true,
-                                assignedTo: true,
-                                description: true,
-                                User: {
-                                    select: {
-                                        id: true,
-                                        userName: true,
-                                    },
-                                },
-                                Priorities: {
-                                    select: {
-                                        id: true,
-                                        priorityName: true,
-                                    },
-                                },
-                                TaskStatus: {
-                                    select: {
-                                        id: true,
-                                        statusName: true,
-                                    }
-                                }
-                            },
-                        },
-                    },
+                Tasks:{
+                    ...TaskRelations,
                 },
             },
         });

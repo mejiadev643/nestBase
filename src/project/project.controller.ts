@@ -12,26 +12,26 @@ export class ProjectController {
     constructor(private readonly projectService: ProjectService) { }
 
     @Get()
-    async findTasks(@Request() req: any, @Query() pagination: PaginationDto) {
+    async findProjects(@Request() req: any, @Query() pagination: PaginationDto) {
         try {
-            const tasks = await this.projectService.findProjects(req.user, pagination);
+            const projects = await this.projectService.findProjects(req.user, pagination);
             return {
                 // statusCode: 200,
-                message: 'Tasks fetched successfully',
-                ...tasks,
+                message: 'projects fetched successfully',
+                ...projects,
             };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
     @Get(':id')
-    async findTask(@Request() req: any, @Param() id: ParseIdDto) {
+    async findProject(@Request() req: any, @Param() id: ParseIdDto) {
         try {
-            const tasks = await this.projectService.findProject(req.user, id);
+            const project = await this.projectService.findProject(req.user, id);
             return {
                 // statusCode: 200,
-                message: 'Tasks fetched successfully',
-                ...tasks,
+                message: 'project fetched successfully',
+                ...project,
             };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
