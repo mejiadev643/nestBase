@@ -12,7 +12,7 @@ export class ProjectService {
     constructor(private prisma: PrismaService) { }
 
     async findProjects(req: any, pagination : PaginationDto) {
-        const { skip, take, search } = pagination;
+        const { skip, take, search,order,orderBy } = pagination;
         let searchQuery = search ? {
             //buscar por and
             AND: [
@@ -59,6 +59,9 @@ export class ProjectService {
             },
             skip,
             take,
+            orderBy: {
+                [orderBy]: order,
+           },
         });
 
         // Calcular la cantidad total de páginas

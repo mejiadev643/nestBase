@@ -12,7 +12,7 @@ export class TaskService {
     constructor(private prisma: PrismaService) { }
 
     async findTasks(req: any, pagination: PaginationDto) {
-        const { skip, take, search } = pagination;
+        const { skip, take, search, order,orderBy } = pagination;
         let searchQuery = search ? {
             //buscar por and
             AND: [
@@ -45,7 +45,7 @@ export class TaskService {
             skip,
             take,
             orderBy: {
-                id: 'desc',
+                 [orderBy]: order,
             },
         });
 
