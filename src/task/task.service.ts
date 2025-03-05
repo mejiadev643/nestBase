@@ -5,64 +5,36 @@ import { TaskDto } from './dto/task.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
 import { CommonService } from '../common/services/Common.service';
-
+import { PaginationService } from 'src/common/services/Pagination.service';
 
 @Injectable()
 export class TaskService {
 
     constructor(private prisma: PrismaService,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private paginationService: PaginationService
     ) { }
 
     async findTasks(req: any, pagination: PaginationDto) {
-        const { skip, take, search, order, orderBy } = pagination;
-        const adjustedSkip = skip * take;
-        let searchQuery = search ? {
-            //buscar por and
-            AND: [
-                {
-                    OR: [
-                        { taskName: { contains: search } },
-                        { taskDescription: { contains: search } },
-                    ]
-                }
-            ],
-        } : {};
-
-        const totalItems = await this.commonService.countRecords('tasks', {
-            deletedAt: null,
-            userId: req.userId,
-        });
 
         // Obtener los registros paginados
-        const tasks = await this.prisma.tasks.findMany({
-            where: {
+        const tasks = await this.paginationService.paginate(
+            'tasks',
+            pagination,
+            ['taskName', 'taskDescription'],
+            TaskRelations.select,//select para una sola tabla
+            {
                 deletedAt: null,
                 userId: req.userId,
-                ...searchQuery,
             },
-            ...TaskRelations,
-            skip: adjustedSkip,
-            take,
-            orderBy: {
-                [orderBy]: order,
-            },
-        });
-
-        // Calcular la cantidad total de páginas
-        const totalPages = Math.ceil(totalItems / take);
+            undefined //include para relaciones
+        );
 
         return {
-            data: tasks,
-            meta: {
-                totalItems,
-                totalPages,
-                currentPage: Math.floor(adjustedSkip / take) + 1,
-                perPage: take,
-                search,
-            },
+            ...tasks,
         };
     }
+
     async findTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
         await this.commonService.findId(id, 'tasks');
@@ -78,6 +50,7 @@ export class TaskService {
         }
         return task;
     }
+
     async createTask(req: any, taskData: TaskDto) {
         try {
             const { projectId, priorityId, taskStatusId, ...newTask } = taskData;
@@ -104,6 +77,7 @@ export class TaskService {
             throw new InternalServerErrorException(error.message);
         }
     }
+
     async updateTask(req: any, objId: ParseIdDto, taskData: TaskDto) {
         const id = objId.id;
         await this.commonService.findId(id, 'tasks');
@@ -128,6 +102,7 @@ export class TaskService {
             throw new InternalServerErrorException(error.message);
         }
     }
+    
     async deleteTask(req: any, objId: ParseIdDto) {
         const id = objId.id;
         await this.commonService.findId(id, 'tasks');

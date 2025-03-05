@@ -5,42 +5,25 @@ import { ProjectDto } from './dto/project.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
 import { CommonService } from '../common/services/Common.service';
+import { PaginationService } from 'src/common/services/Pagination.service';
 
 @Injectable()
 export class ProjectService {
 
     constructor(private prisma: PrismaService,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private paginationService: PaginationService
     ) { }
 
     async findProjects(req: any, pagination: PaginationDto) {
-        const { skip, take, search, order, orderBy } = pagination;
-        let searchQuery = search ? {
-            //buscar por and
-            AND: [
-                {
-                    OR: [
-                        { name: { contains: search } },
-                        { description: { contains: search } },
-                    ]
-                }
-            ],
-        } : {};
-
-        // Obtener el número total de registros sin paginación
-        const totalItems = await this.commonService.countRecords('projects', {
-            deletedAt: null,
-            userId: req.userId,
-        });
+        
 
         // Obtener los registros paginados
-        const projects = await this.prisma.projects.findMany({
-            where: {
-                userId: req.userId,
-                deletedAt: null,
-                ...searchQuery,
-            },
-            select: {
+        const projects = await this.paginationService.paginate(
+            'projects',
+            pagination,
+            ['name', 'description'],
+            {
                 id: true,
                 name: true,
                 description: true,
@@ -54,27 +37,16 @@ export class ProjectService {
                 },
                 Tasks: {
                     ...TaskRelations,
-                }
+                },
             },
-            skip,
-            take,
-            orderBy: {
-                [orderBy]: order,
+            {
+                deletedAt: null,
+                userId: req.userId,
             },
-        });
-
-        // Calcular la cantidad total de páginas
-        const totalPages = Math.ceil(totalItems / take);
-
+            undefined
+        );
         return {
-            data: projects,
-            meta: {
-                totalItems,
-                totalPages,
-                currentPage: Math.floor(skip / take) + 1,
-                perPage: take,
-                search,
-            },
+            ...projects // <-- Retornar los proyectos,
         };
     }
 
