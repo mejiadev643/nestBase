@@ -10,9 +10,10 @@ import { PaginationService } from 'src/common/services/Pagination.service';
 @Injectable()
 export class ProjectService {
 
-    constructor(private prisma: PrismaService,
-        private commonService: CommonService,
-        private paginationService: PaginationService
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly commonService: CommonService,
+        private readonly paginationService: PaginationService,
     ) { }
 
     async findProjects(req: any, pagination: PaginationDto) {

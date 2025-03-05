@@ -1,29 +1,28 @@
 import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { TaskDto } from './dto/task.dto';
+import { SubtaskDto } from './dto/subtask.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 import { TaskRelations } from 'src/common/customQuerys/TaskRelation';
 import { CommonService } from '../common/services/Common.service';
 import { PaginationService } from 'src/common/services/Pagination.service';
 
 @Injectable()
-export class TaskService {
+export class SubtaskService {
 
-    constructor(
-        private readonly prisma: PrismaService,
+    constructor(private readonly prisma: PrismaService,
         private readonly commonService: CommonService,
-        private readonly paginationService: PaginationService,
+        private readonly paginationService: PaginationService
     ) { }
 
-    async findTasks(req: any, pagination: PaginationDto) {
+    async findSubtasks(req: any, pagination: PaginationDto) {
 
         // Obtener los registros paginados
-        const tasks = await this.paginationService.paginate(
-            'tasks',
+        const subtasks = await this.paginationService.paginate(
+            'subtasks',
             pagination,
-            ['taskName', 'taskDescription'],
-            TaskRelations.select,//select para una sola tabla
+            ['subtaskName', 'description'],
+                TaskRelations.select.subtasks.select,//select para una sola tabla
             {
                 deletedAt: null,
                 userId: req.userId,
@@ -32,40 +31,69 @@ export class TaskService {
         );
 
         return {
-            ...tasks,
+            ...subtasks,
         };
     }
 
-    async findTask(req: any, objId: ParseIdDto) {
+    async findSubtask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await this.commonService.findId(id, 'tasks');
-        const task = await this.prisma.tasks.findUnique({
+        await this.commonService.findId(id, 'subtasks');
+        const subtasks = await this.prisma.subtasks.findFirst({
             where: {
                 deletedAt: null,
                 id: id,
             },
-            ...TaskRelations,
+            ...TaskRelations.select.subtasks,
         });
-        if (!task) {
+        if (!subtasks) {
             throw new ConflictException('Task not found');
         }
-        return task;
+        return subtasks;
     }
 
-    async createTask(req: any, taskData: TaskDto) {
+    async createSubtask(req: any, subtaskData: SubtaskDto) {
         try {
-            const { projectId, priorityId, taskStatusId, ...newTask } = taskData;
-            const task = await this.prisma.tasks.create({
+            const { taskId, priorityId, taskStatusId,assignedTo, ...newSubTask } = subtaskData;
+            const subtask = await this.prisma.subtasks.create({
                 data: {
-                    ...newTask,
+                    ...newSubTask,
                     TaskStatus: {
                         connect: { id: taskStatusId ?? 1 },//1 es el id de la tarea en progreso
                     },
-                    User: {
-                        connect: { id: req.userId as number },
+                    Tasks: {
+                        connect: { id: taskId },
                     },
-                    Projects: {
-                        connect: { id: projectId },
+                    User: {
+                        connect: { id: assignedTo },
+                    },
+                    Priorities: {
+                        connect: { id: priorityId },
+                    }
+
+                },
+            });
+            return subtask;
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    async updateSubtask(req: any, objId: ParseIdDto, subtaskData: SubtaskDto) {
+        const id = objId.id;
+        await this.commonService.findId(id, 'subtasks');
+        const { taskId, priorityId, taskStatusId,assignedTo, ...newSubTask } = subtaskData;
+        try {
+            const task = await this.prisma.tasks.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    ...newSubTask,
+                    TaskStatus: {
+                        connect: { id: taskStatusId },//1 es el id de la tarea en progreso
+                    },
+                    User: {
+                        connect: { id: assignedTo },
                     },
                     Priorities: {
                         connect: { id: priorityId },
@@ -78,40 +106,14 @@ export class TaskService {
             throw new InternalServerErrorException(error.message);
         }
     }
-
-    async updateTask(req: any, objId: ParseIdDto, taskData: TaskDto) {
-        const id = objId.id;
-        await this.commonService.findId(id, 'tasks');
-        const { projectId, priorityId, taskStatusId, ...editTask } = taskData;
-        try {
-            const task = await this.prisma.tasks.update({
-                where: {
-                    id: id,
-                },
-                data: {
-                    ...editTask,
-                    Priorities: {
-                        connect: { id: priorityId },
-                    },
-                    TaskStatus: {
-                        connect: { id: taskStatusId },
-                    },
-                }
-            });
-            return task;
-        } catch (error) {
-            throw new InternalServerErrorException(error.message);
-        }
-    }
     
-    async deleteTask(req: any, objId: ParseIdDto) {
+    async deleteSubtask(req: any, objId: ParseIdDto) {
         const id = objId.id;
-        await this.commonService.findId(id, 'tasks');
+        await this.commonService.findId(id, 'subtasks');
         try {
-            return await this.prisma.tasks.update({
+            return await this.prisma.subtasks.update({
                 where: {
                     id,
-                    userId: req.userId,
                 },
                 data: {
                     deletedAt: new Date(),

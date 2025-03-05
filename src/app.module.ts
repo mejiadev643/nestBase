@@ -7,9 +7,10 @@ import { HomeModule } from './home/home.module';
 import { WebModule } from './web/web.module';
 import { TasksModule } from './task/task.module';
 import { ProjecModule } from './project/project.module';
+import { SubTaskModule } from './subtask/subtask.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, HomeModule, WebModule, TasksModule,ProjecModule],
+  imports: [UsersModule, AuthModule, HomeModule, WebModule, TasksModule,ProjecModule,SubTaskModule],
   controllers: [HomeController],
   providers: [PrismaService],
   exports: [PrismaService],
