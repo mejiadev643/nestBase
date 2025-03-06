@@ -99,15 +99,15 @@ model Subtasks {
   taskId       Int
   subtaskName  String
   isCompleted  Boolean        @default(false)
-  assignedTo   Int
-  description  String
-  priorityId   Int
-  TaskStatusId Int
+  assignedTo   Int?
+  description  String?
+  priorityId   Int?
+  taskStatusId Int?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   deletedAt    DateTime?
   Tasks        Tasks          @relation(fields: [taskId], references: [id])
-  Priorities   Priorities     @relation(fields: [priorityId], references: [id])
-  TaskStatus   Task_estatuses @relation(fields: [TaskStatusId], references: [id])
-  User         User           @relation(fields: [assignedTo], references: [id])
+  Priorities   Priorities?     @relation(fields: [priorityId], references: [id])
+  TaskStatus   Task_estatuses? @relation(fields: [taskStatusId], references: [id])
+  User         User?           @relation(fields: [assignedTo], references: [id])
 }

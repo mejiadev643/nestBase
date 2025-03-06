@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 
@@ -32,4 +33,11 @@ export class SubtaskDto {
     // @IsOptional()
     // taskComments: string;
 
+}
+
+export class GetSubTaskDto {
+    @Transform(({ value }) => parseInt(value))
+    @IsInt()
+    @IsNotEmpty()
+    taskId: number;
 }

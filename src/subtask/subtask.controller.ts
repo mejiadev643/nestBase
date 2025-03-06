@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpException, HttpStatus, Get, Delete, Param, 
 import { SubtaskService } from './subtask.service';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { SubtaskDto } from './dto/subtask.dto';
+import { SubtaskDto, GetSubTaskDto } from './dto/subtask.dto';
 import { ParseIdDto } from 'src/common/dto/parseId.dto';
 
 @UseGuards(AuthGuard('jwt'))
@@ -12,9 +12,16 @@ export class SubtaskContoller {
     constructor(private readonly SubtaskService: SubtaskService) { }
 
     @Get()
-    async findSubtasks(@Request() req: any, @Query() pagination: PaginationDto) {
+    async index() {
+        return {
+            message: 'Subtask module',
+        };
+    }
+
+    @Get(':taskId')
+    async findSubtasks(@Param() taskId: GetSubTaskDto, @Query() pagination: PaginationDto) {
         try {
-            const tasks = await this.SubtaskService.findSubtasks(req.user, pagination);
+            const tasks = await this.SubtaskService.findSubtasks(taskId, pagination);
             return {
                 // statusCode: 200,
                 message: 'Tasks fetched successfully',
@@ -24,11 +31,11 @@ export class SubtaskContoller {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
-    
-    @Get(':id')
-    async findSubtask(@Request() req: any, @Param() id: ParseIdDto) {
+
+    @Get('/info/:id')
+    async findSubtask(@Param() id: ParseIdDto) {
         try {
-            const Subtask = await this.SubtaskService.findSubtask(req.user, id);
+            const Subtask = await this.SubtaskService.findSubtask(id);
             return {
                 // statusCode: 200,
                 message: 'Subtask fetched successfully',
@@ -54,9 +61,9 @@ export class SubtaskContoller {
     }
 
     @Put(':id')
-    async updateSubtask(@Request() req: any, @Param() id: ParseIdDto, @Body() Subtask: SubtaskDto) {
+    async updateSubtask(@Param() id: ParseIdDto, @Body() Subtask: SubtaskDto) {
         try {
-            const updatedSubtask = await this.SubtaskService.updateSubtask(req.user, id, Subtask);
+            const updatedSubtask = await this.SubtaskService.updateSubtask(id, Subtask);
             return {
                 // statusCode: 200,
                 message: 'Subtask updated successfully',
@@ -68,9 +75,9 @@ export class SubtaskContoller {
     }
 
     @Delete(':id')
-    async deleteSubtask(@Request() req: any, @Param() id: ParseIdDto) {
+    async deleteSubtask(@Param() id: ParseIdDto) {
         try {
-            const deletedSubtask = await this.SubtaskService.deleteSubtask(req.user, id);
+            const deletedSubtask = await this.SubtaskService.deleteSubtask(id);
             return {
                 // statusCode: 200,
                 message: 'Subtask deleted successfully',
