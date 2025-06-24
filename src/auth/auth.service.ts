@@ -30,4 +30,11 @@ export class AuthService {
             access_token: this.jwtService.sign(payload),
         };
     }
+
+    async logout(userId: number) {
+        // Aquí puedes implementar la lógica para invalidar el token del usuario
+        // Por ejemplo, podrías eliminar el token de una base de datos o marcarlo como inválido
+        // En este caso, simplemente retornamos un mensaje de éxito
+        return { message: 'Logout successful' };
+    }
 }

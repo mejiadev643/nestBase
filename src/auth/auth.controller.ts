@@ -13,4 +13,9 @@ export class AuthController {
     }
     return this.authService.login(user);
   }
+  @Post('logout')
+  async logout(@Request() req: any) {
+    const userId = req.user.userId; // Asumiendo que el ID del usuario está en req.user.id
+    return this.authService.logout(userId);
+  }
 }
