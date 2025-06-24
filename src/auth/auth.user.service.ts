@@ -10,7 +10,6 @@ export class UserService {
         return this.prisma.user.findUnique({
             where: {
                 email,
-                isActive: true,
             }
         });
     }

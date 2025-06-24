@@ -28,7 +28,8 @@ export class UsersService {
                     email,
                     name,
                     password: hashedPassword,
-                    createdAt: new Date(),              },
+                    createdAt: new Date(),
+                },
             });
         } catch (error) {
             // Manejo de errores de Prisma
@@ -56,7 +57,7 @@ export class UsersService {
             undefined, //include relations
         )
         return {
-           ...users
+            ...users
         };
     }
     async getCurrentUser(req: any) {

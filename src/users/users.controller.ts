@@ -44,8 +44,7 @@ export class UsersController {
       // Por ejemplo, si estás usando JWT, puedes obtener el usuario del token
       const user = await this.usersService.getCurrentUser(req);
       return {
-        message: 'User retrieved successfully',
-        data: user,
+        ...user,
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
