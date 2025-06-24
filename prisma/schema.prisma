@@ -1,6 +1,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -14,7 +15,19 @@ model User {
   email String @unique
   name  String
   password String
-  lastLogin DateTime?
+  roleId Int
+  isActive Boolean @default(true)
+  lastLogin DateTime? @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  role Role @relation(fields: [roleId], references: [id])
+}
+
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User User[]
 }

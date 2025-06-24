@@ -10,6 +10,7 @@ const schemaPath = path.join(prismaDir, 'schema.prisma');
 const mainSchema = `
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
