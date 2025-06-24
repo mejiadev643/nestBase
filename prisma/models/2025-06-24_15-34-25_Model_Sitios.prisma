@@ -1,16 +1,14 @@
-model User {
+model Sitios {
   id           String         @id @default(uuid()) @db.Uuid // Use UUID for id postgres native type
-  email        String         @unique
-  name         String
-  password     String
-  uuid         String         @unique @db.Uuid
+  nombre       String
+  url          String
   deletedAt    DateTime?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   credenciales Credenciales[]
 
-  @@index([email])
-  @@index([name])
+  @@unique([nombre, url])
+  @@index([nombre])
+  @@index([url])
   @@index([deletedAt])
-  @@map("Users") // Optional: map to a specific table name if needed
 }

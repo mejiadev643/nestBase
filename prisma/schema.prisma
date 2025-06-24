@@ -11,11 +11,55 @@ datasource db {
 
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
-  password String
-  deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String         @id @default(uuid()) @db.Uuid // Use UUID for id postgres native type
+  email        String         @unique
+  name         String
+  password     String
+  uuid         String         @unique @db.Uuid
+  deletedAt    DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  credenciales Credenciales[]
+
+  @@index([email])
+  @@index([name])
+  @@index([deletedAt])
+  @@map("Users") // Optional: map to a specific table name if needed
+}
+
+
+model Sitios {
+  id           String         @id @default(uuid()) @db.Uuid // Use UUID for id postgres native type
+  nombre       String
+  url          String
+  deletedAt    DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  credenciales Credenciales[]
+
+  @@unique([nombre, url])
+  @@index([nombre])
+  @@index([url])
+  @@index([deletedAt])
+}
+
+
+model Credenciales {
+  id                    String    @id @default(uuid()) @db.Uuid
+  usuario_id            String    @db.Uuid
+  sitio_id              String    @db.Uuid
+  nombre_usuario        String
+  contrasena_encriptada String
+  notas                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+  usuario               User      @relation(fields: [usuario_id], references: [id])
+  sitio                 Sitios    @relation(fields: [sitio_id], references: [id])
+
+  @@unique([usuario_id, sitio_id, nombre_usuario])
+  @@index([usuario_id])
+  @@index([sitio_id])
+  @@index([nombre_usuario])
+  @@index([deletedAt])
 }

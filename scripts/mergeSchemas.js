@@ -24,5 +24,10 @@ const models = fs
   .map((file) => fs.readFileSync(path.join(modelsDir, file), 'utf-8'))
   .join('\n\n');
 
+//eliminar el contenido anterior del schema.prisma
+if (fs.existsSync(schemaPath)) {
+  fs.unlinkSync(schemaPath);
+}
+
 fs.writeFileSync(schemaPath, `${mainSchema}\n\n${models}`);
 console.log('Schema merged successfully!');

@@ -1,0 +1,19 @@
+model Credenciales {
+  id                    String    @id @default(uuid()) @db.Uuid
+  usuario_id            String    @db.Uuid
+  sitio_id              String    @db.Uuid
+  nombre_usuario        String
+  contrasena_encriptada String
+  notas                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+  usuario               User      @relation(fields: [usuario_id], references: [id])
+  sitio                 Sitios    @relation(fields: [sitio_id], references: [id])
+
+  @@unique([usuario_id, sitio_id, nombre_usuario])
+  @@index([usuario_id])
+  @@index([sitio_id])
+  @@index([nombre_usuario])
+  @@index([deletedAt])
+}
